@@ -2,10 +2,15 @@ import { Form, useLoaderData } from "@remix-run/react";
 import type { FunctionComponent } from "react";
 
 import { getContact, type ContactRecord } from "../data";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import invariant from "tiny-invariant";
 
-// @ts-expect-error no types
-export const loader = async ({ params }) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  invariant(params.contactId, "No contactId provided");
   const contact = await getContact(params.contactId);
+  if (!contact) {
+    throw new Response("Contact not found", { status: 404 });
+  }
   return Response.json({ contact });
 };
 

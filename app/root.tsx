@@ -11,7 +11,7 @@ import {
 } from "@remix-run/react";
 
 import appStylesHref from "./app.css?url";
-import { getContacts } from "~/data";
+import { ContactRecord, getContacts } from "~/data";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
@@ -23,7 +23,8 @@ export const loader = async () => {
 };
 
 export default function App() {
-  const { contacts } = useLoaderData<typeof loader>();
+  const { contacts }: { contacts: ContactRecord[] } =
+    useLoaderData<typeof loader>();
 
   return (
     <html lang="en">
@@ -39,7 +40,6 @@ export default function App() {
           <nav>
             {contacts.length ? (
               <ul>
-                {/* @ts-expect-error no types */}
                 {contacts.map((contact) => (
                   <li key={contact.id}>
                     <Link to={`/contacts/${contact.id}`}>
