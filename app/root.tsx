@@ -91,7 +91,12 @@ export default function App() {
             <Form
               id="search-form"
               role="search"
-              onChange={(event) => submit(event.currentTarget)}
+              onChange={(event) => {
+                const isFirstSearch = q === null;
+                submit(event.currentTarget, {
+                  replace: !isFirstSearch,
+                });
+              }}
             >
               <input
                 id="q"
@@ -120,7 +125,9 @@ export default function App() {
           </nav>
         </div>
         <div
-          className={navigation.state === "loading" && !searching ? "loading" : ""}
+          className={
+            navigation.state === "loading" && !searching ? "loading" : ""
+          }
           id="detail"
         >
           <Outlet />
