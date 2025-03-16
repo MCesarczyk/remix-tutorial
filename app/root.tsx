@@ -7,15 +7,24 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 
-import appStylesHref from "./app.css?url"
+import appStylesHref from "./app.css?url";
+import { getContacts } from "~/data";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
 ];
 
+export const loader = async () => {
+  const contacts = await getContacts();
+  return Response.json({ contacts });
+};
+
 export default function App() {
+  const { contacts } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -27,6 +36,29 @@ export default function App() {
       <body>
         <div id="sidebar">
           <h1>Remix Contacts</h1>
+          <nav>
+            {contacts.length ? (
+              <ul>
+                {/* @ts-expect-error no types */}
+                {contacts.map((contact) => (
+                  <li key={contact.id}>
+                    <Link to={`/contacts/${contact.id}`}>
+                      {contact.first || contact.last ? (
+                        <>
+                          {contact.first} {contact.last}
+                        </>
+                      ) : (
+                        <i>No Name</i>
+                      )}{" "}
+                      {contact.favorite ? <span>⭐️</span> : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No contacts found.</p>
+            )}
+          </nav>
           <div>
             <Form id="search-form" role="search">
               <input
